@@ -164,13 +164,12 @@ function main() {
     var lrc = new Color(255,192,203,255); // lower right corner color: pink
     var ulx = 50, uly = 50; // upper left corner position
     var urx = 200, ury = 50; // upper right corner position
-    var llx = 50, lly = 150; // lower left corner position
-    var lrx = 200, lry = 150; // lower right corner position
+    var bx = 125, by = 150; // bottom
     
     // set up the vertical interpolation
     var lc = ulc.clone();  // left color
     var rc = urc.clone();  // right color
-    var vDelta = 1 / (lly-uly); // norm'd vertical delta
+    var vDelta = 1 / (bx-uly); // norm'd vertical delta
     var lcDelta = llc.clone().subtract(ulc).scale(vDelta); // left vert color delta
     var rcDelta = lrc.clone().subtract(urc).scale(vDelta); // right vert color delta
     
@@ -180,15 +179,17 @@ function main() {
     var hcDelta = new Color(); // horizontal color delta
     
     // do the interpolation
-    for (var y=uly; y<=lly; y++) {
+    var change = 0;
+    for (var y=uly; y<=by; y++) {
         hc.copy(lc); // begin with the left color
         hcDelta.copy(rc).subtract(lc).scale(hDelta); // reset horiz color delta
-        for (var x=ulx; x<=urx; x++) {
+        for (var x=ulx + change; x<=urx - change; x++) {
             drawPixel(imagedata,x,y,hc);
             hc.add(hcDelta);
         } // end horizontal
         lc.add(lcDelta);
         rc.add(rcDelta);
+        change += 1;
     } // end vertical
     
     context.putImageData(imagedata, 0, 0); // display the image in the context
